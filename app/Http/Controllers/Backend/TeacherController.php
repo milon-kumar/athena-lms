@@ -43,16 +43,29 @@ class TeacherController extends Controller
         if (invalidPermission('Teacher.Create')){
             return redirect()->back();
         }
-        $names =  $request->input('names');
-        foreach ($names as $key => $name) {
-           Teacher::create([
-               'name'=> $request->input('names')[$key],
-               'email'=> $request->input('emails')[$key],
-               'phone'=>$request->input('phones')[$key],
-               'image'=> $request->file('images')[$key]->store('/images', ['disk' =>'my_files'] ?? config('filesystems.noimage')),
-               'description'=>$request->input('descriptions')[$key],
-           ]);
-        }
+
+        Teacher::create([
+            'name'=>$request->input('name'),
+            'line2'=>$request->input('line2'),
+            'line3'=>$request->input('line3'),
+            'line4'=>$request->input('line4'),
+            'line5'=>$request->input('line5'),
+            'serial'=>$request->input('serial'),
+            'image'=>uploadImage($request),
+            'fb_page'=>$request->input('fb_page'),
+            'youtube_chanel'=>$request->input('youtube_chanel')
+        ]);
+
+//        $names =  $request->input('names');
+//        foreach ($names as $key => $name) {
+//           Teacher::create([
+//               'name'=> $request->input('names')[$key],
+//               'email'=> $request->input('emails')[$key],
+//               'phone'=>$request->input('phones')[$key],
+//               'image'=> $request->file('images')[$key]->store('/images', ['disk' =>'my_files'] ?? config('filesystems.noimage')),
+//               'description'=>$request->input('descriptions')[$key],
+//           ]);
+//        }
         toast('Teacher Created Successfully....','success');
         return redirect()->route('admin.teacher.index');
     }
@@ -87,11 +100,15 @@ class TeacherController extends Controller
             return redirect()->back();
         }
         $teacher->update([
-            'name'=> $request->input('names'),
-            'email'=> $request->input('emails'),
-            'phone'=>$request->input('phones'),
-            'image'=> uploadImage($request),
-            'description'=>$request->input('descriptions'),
+            'name'=>$request->input('name'),
+            'line2'=>$request->input('line2'),
+            'line3'=>$request->input('line3'),
+            'line4'=>$request->input('line4'),
+            'line5'=>$request->input('line5'),
+            'serial'=>$request->input('serial'),
+            'image'=>uploadImage($request,$teacher->image),
+            'fb_page'=>$request->input('fb_page'),
+            'youtube_channel'=>$request->input('youtube_channel')
         ]);
         toast('Teacher Update Successfully.....','success');
         return redirect()->route('admin.teacher.index');

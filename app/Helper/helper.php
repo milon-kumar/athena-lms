@@ -5,13 +5,31 @@ use App\Models\Setting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Models\BusinessSetting;
+use Illuminate\Support\Facades\Storage;
 
 
-
-function uploadImage($request,$update_image = null){
-    return $request->hasFile('image')?$request->file('image')->store('/images', ['disk' =>'my_files']): $update_image->image ?? 'images/default.jpg';
+if (!function_exists('deleteImage')) {
+    function uploadImage($request, $oldImage = null)
+    {
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('/images', ['disk' => 'my_files']);
+            if ($oldImage) {
+                Storage::disk('my_files')->delete($oldImage);
+            }
+        } else {
+            $imagePath = $oldImage;
+        }
+        return $imagePath;
+    }
 }
 
+if (!function_exists('deleteImage')) {
+    function deleteImage($image)
+    {
+        Storage::disk('my_files')->delete($image);
+        return true;
+    }
+}
 
 function uploadPdf($request = null){
     if ($request){

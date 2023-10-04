@@ -22,38 +22,40 @@
                         @endcan
                     </div>
                     <div class="card-body">
-                        <table id="datatable-buttons" class="table border border-dark table-bordered table-striped dt-responsive nowrap w-100 text-dark">
-                            <thead>
-                            <tr>
-                                <th>Teacher Name</th>
-                                <th class="text-center">Image</th>
-                                <th>Phone</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($teachers as $teacher)
-                                    <tr>
-                                        <th>{{ $teacher->name ?? '' }}</th>
-                                        <td>
-                                            <div class="" style="width: 65px;height: 65px;overflow: hidden;border-radius: 50px;">
-                                                <img style="width: 100%;height: 100%;" src="{{ asset($teacher->image) ?? defaultImage() }}" alt="{{ $teacher->name }}">
+                        <div class="row">
+                            @foreach($teachers as $teacher)
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-header p-4">
+                                            <img src="{{asset($teacher->image) ?? defaultImage()}}" class="card-img-top rounded" alt="{{ $teacher->name ?? '' }}">
+                                        </div>
+                                        <div class="card-body">
+                                            <span class="h4 font-weight-normal text-gray">{{ $teacher->name ?? "Teacher Name" }}</span>
+                                            <br/>
+                                            <span class="h5 font-weight-normal text-gray">{{ $teacher->line2 ?? "Line 2" }}</span>
+                                            <div class="mt-2">
+                                                <div class="">{{ $teacher->line3 }}</div>
+                                                <div class="">{{ $teacher->line4 }}</div>
+                                                <div class="">{{ $teacher->line5 }}</div>
                                             </div>
-                                        </td>
-                                        <td>{{ $teacher->phone ?? '' }}</td>
-                                        <td>
-                                            @can('Teacher.Edit')
-                                                <a href="{{ route('admin.teacher.edit',$teacher->id) }}" class="btn btn-dark btn-sm"><i class="mdi mdi-book-edit"></i></a>
-                                            @endcan
-                                            @can('Teacher.Delete')
-                                                    <a href="Javascript:void(0);" onclick="deleteData({{ $teacher->id }})" class="btn btn-danger btn-sm"><i class="mdi mdi-trash-can"></i></a>
-                                                    <form action="{{ route('admin.teacher.destroy',$teacher->id) }}" id="delete-form-{{$teacher->id}}" method="post">@csrf @method('DELETE')</form>
-                                            @endcan
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                        </div>
+                                        <div class="card-footer">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="">
+                                                    <a href="{{ $teacher->fb_page }}"><i class="mdi mdi-facebook" style="font-size: 30px;color: #0866FF;"></i></a>
+                                                    <a href="{{ $teacher->youtube_chanel }}"><i class="mdi mdi-youtube" style="font-size: 34px;color: #ff0600;"></i></a>
+                                                </div>
+                                                <div class="">
+                                                    <a href="" class="btn btn-sm btn-success"><i class="mdi mdi-all-inclusive"></i></a>
+                                                    <a href="{{ route('admin.teacher.edit',$teacher->id) }}" class="btn btn-sm btn-success"><i class="mdi mdi-account-edit"></i></a>
+                                                    <a href="" class="btn btn-sm btn-danger"><i class="mdi mdi-trash-can"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>

@@ -21,7 +21,11 @@
                         <button type="submit" class="btn btn-success btn-sm d-inline-block float-end" style="margin-right: 10px;"><i class="mdi mdi-content-save"></i> Save Teacher </button>
                     </div>
                     <div class="card-body">
-
+                        <div class="">
+                            <div class="">
+                                <input type="text">
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>

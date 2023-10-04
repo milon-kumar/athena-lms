@@ -27,11 +27,11 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
         ]);
 
-        Teacher::factory(1)->create();
-        Category::factory(1)->create();
-        Course::factory(1)->create();
-        CourseChapter::factory(1)->create();
-        Video::factory(1)->create();
+        Teacher::factory(0)->create();
+        Category::factory(0)->create();
+        Course::factory(0)->create();
+        CourseChapter::factory(0)->create();
+        Video::factory(0)->create();
         Comment::factory(0)->create();
     }
 }

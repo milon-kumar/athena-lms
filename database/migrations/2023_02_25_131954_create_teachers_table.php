@@ -18,6 +18,10 @@ return new class extends Migration
             $table->string('image')->nullable()->default('images/user.webp');
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
+            $table->string('line2')->nullable();
+            $table->string('line3')->nullable();
+            $table->string('line4')->nullable();
+            $table->string('line5')->nullable();
             $table->string('skype')->nullable();
             $table->string('whatsapp')->nullable();
             $table->longText('description')->nullable();

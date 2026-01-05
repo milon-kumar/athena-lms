@@ -23,44 +23,53 @@ class DashboardController extends Controller
     {
         $cpanel = new Cpanel();
 
-        $diskInfo     = $cpanel->getCpanelDiskQuotaInfo();
-        $dbInfo       = $cpanel->listDatabases();
-        $storageInfo  = $cpanel->callUAPI('Quota', 'get_quota_info');
+        $diskInfo    = $cpanel->getCpanelDiskQuotaInfo();
+        $dbInfo      = $cpanel->listDatabases();
+        $storageInfo = $cpanel->callUAPI('Quota', 'get_quota_info');
 
-        $allDatabases = $dbInfo['data']->data;
-        $diskData     = $diskInfo['data']->data;
-        $storageInfo  = $storageInfo['data']->data;
+        // Normalize API responses safely
+        $allDatabases = data_get($dbInfo, 'data.data', []);
+        $diskData     = data_get($diskInfo, 'data.data', []);
+        $storageInfo  = data_get($storageInfo, 'data.data', []);
 
-        // using limit
-        $usingLimit = $diskData->bytes_used / 1024 / 1024 / 1024;
-        // total limit
-        $totalLimit = $diskData->byte_limit / 1024 / 1024 / 1024;
+        // Ensure disk data keys exist
+        $bytesUsed   = $diskData['bytes_used']   ?? 0;
+        $byteLimit   = $diskData['byte_limit']   ?? 0;
+        $inodeLimit  = $diskData['inode_limit']  ?? 0;
+        $inodesUsed  = $diskData['inodes_used']  ?? 0;
 
-        $arr = [];
-        $arr['total_using']   = number_format($usingLimit, 2);
-        $arr['total_limit']   = number_format($totalLimit, 2);
-        $arr['total_files']   = number_format($diskData->inode_limit);
-        $arr['files_using']   = number_format($diskData->inodes_used);
-        $arr['all_databases'] = $allDatabases;
-        $arr['storage_info']  = $storageInfo;
+        // Convert bytes → GB
+        $usingLimit = $bytesUsed / 1024 / 1024 / 1024;
+        $totalLimit = $byteLimit / 1024 / 1024 / 1024;
 
-
+        $arr = [
+            'total_using'   => number_format($usingLimit, 2),
+            'total_limit'   => number_format($totalLimit, 2),
+            'total_files'   => number_format($inodeLimit),
+            'files_using'   => number_format($inodesUsed),
+            'all_databases' => $allDatabases,
+            'storage_info'  => $storageInfo,
+        ];
 
         $topCourse = Course::withCount('comments')
-                                    ->orderBy('view_count','desc')
-                                    ->orderBy('comments_count','desc')
-                                    ->take(5)
-                                    ->get();
+            ->orderBy('view_count', 'desc')
+            ->orderBy('comments_count', 'desc')
+            ->take(5)
+            ->get();
 
         $totalVisitor = Visit::count();
 
-
-        $usersData = User::select(DB::raw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as count'))
+        $usersData = User::select(
+            DB::raw('YEAR(created_at) as year'),
+            DB::raw('MONTH(created_at) as month'),
+            DB::raw('COUNT(*) as count')
+        )
             ->where('created_at', '>=', now()->subMonths(12))
             ->groupBy('year', 'month')
             ->orderBy('year', 'desc')
             ->orderBy('month', 'desc')
             ->get();
+
         $months = [];
         $userCounts = [];
 
@@ -68,7 +77,6 @@ class DashboardController extends Controller
             $months[] = date("F Y", mktime(0, 0, 0, $data->month, 1, $data->year));
             $userCounts[] = $data->count;
         }
-
 
         $browserData = DB::table('shetabit_visits')
             ->select('browser', DB::raw('COUNT(*) as count'))
@@ -82,10 +90,18 @@ class DashboardController extends Controller
             ->orderBy('date', 'asc')
             ->get();
 
-
-
-        return view('backend.admin.pages.dashboard.dashboard',compact('topCourse',
-            'totalVisitor','months','userCounts','browserData','visitorData','arr'));
+        return view(
+            'backend.admin.pages.dashboard.dashboard',
+            compact(
+                'topCourse',
+                'totalVisitor',
+                'months',
+                'userCounts',
+                'browserData',
+                'visitorData',
+                'arr'
+            )
+        );
     }
 
     public function formSubmit(Request $request)
